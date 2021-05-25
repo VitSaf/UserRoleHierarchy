@@ -10,13 +10,13 @@ export default class RoleDisplay extends LightningElement {
     gridColumns = [
             {
                 type: 'text',
-                fieldName: 'Id',
-                label: 'Role Id'
+                fieldName: 'Name',
+                label: 'Role Name'
             },
             {
                 type: 'text',
-                fieldName: 'Name',
-                label: 'Role Name'
+                fieldName: 'Id',
+                label: 'Role Id'
             }
     ]
 
