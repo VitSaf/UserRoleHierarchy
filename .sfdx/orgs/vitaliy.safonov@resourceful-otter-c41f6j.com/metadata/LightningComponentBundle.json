@@ -1,0 +1,16 @@
+{
+  "status": 0,
+  "result": {
+    "createdById": "00509000006T7seAAC",
+    "createdByName": "Vitaliy Safonov",
+    "createdDate": "2021-05-23T07:24:57.000Z",
+    "fileName": "lwc/roleDisplay",
+    "fullName": "roleDisplay",
+    "id": "0Rb090000011fHfCAI",
+    "lastModifiedById": "00509000006T7seAAC",
+    "lastModifiedByName": "Vitaliy Safonov",
+    "lastModifiedDate": "2021-05-24T05:49:10.000Z",
+    "manageableState": "unmanaged",
+    "type": "LightningComponentBundle"
+  }
+}
