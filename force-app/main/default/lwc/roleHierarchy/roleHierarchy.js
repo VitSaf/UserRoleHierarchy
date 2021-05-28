@@ -1,11 +1,19 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getHierarchiedRolesWithManulSerialization from '@salesforce/apex/RoleHierarchy.getHierarchiedRolesWithManulSerialization';
+import MOMENT_JS from '@salesforce/resourceUrl/momentJS';
+import { loadScript } from 'lightning/platformResourceLoader';
+
+//https://github.com/trailheadapps/lwc-recipes/blob/main/force-app/main/default/lwc/libsMomentjs/libsMomentjs.js
 
 export default class RoleDisplay extends LightningElement {
-    
     @track hier;
     @track gridData;
     erorr;
+
+    @track selectedDateTime = new Date().toISOString();
+    weekOfYear;
+    @track dayOfYear;
+    calculatedDateTime;
 
     gridColumns = [
             {
@@ -20,32 +28,32 @@ export default class RoleDisplay extends LightningElement {
             }
     ]
 
-
     map_children = function(_children, rm){
-        console.log(_children.length + _children.length == 0);
         if(_children.length == 0){
-            console.log('return');
             return ;
         }else{
-            console.log('_children:' + _children.length);
             _children.forEach(c => {
                 c._children = rm.get(c.Id)._children;
-                console.log('c:');
-                console.log(c);
                 this.map_children(c._children, rm);
-                //result.addAll(map_children(rolesMapper.get(c.pa)));
             });
         }
     }
 
     connectedCallback(){
+        loadScript(this, MOMENT_JS)
+        .then(() => {
+            this.setMomentValues(this.selectedDateTime);
+        })
+        .catch((error) => {
+            this.error = error;
+        });
+
+
         getHierarchiedRolesWithManulSerialization()
             .then(result => {
                 var res = [];
                 const rolesMapper = new Map();
-                
-
-                //var rolesFromServer = JSON.parse(result);
+                //компонент строит иерархию по _children
                 var rolesFromServer = JSON.parse(result.replaceAll('childs','_children'));
 
                 rolesFromServer.forEach(r => {
@@ -55,46 +63,41 @@ export default class RoleDisplay extends LightningElement {
                     r.Id = r.myRole.Id;
                     r.Name = r.myRole.Name;
                     r.count = r._children.length;
-                    console.log(r);
                     rolesMapper.set(r.myRole.Id, r);
-
                 });
                 var i = 0;
                 rolesFromServer.forEach(r => {
-                    console.log('r:' + i);
-                    console.log(r);
                     this.map_children(r._children, rolesMapper);
                     i+=1;
                 });
 
-                console.log('results:');
-                console.log(rolesFromServer);
-
                 rolesFromServer.forEach(r => {
-                    console.log([r]);
-                    console.log(r.Name === 'CEO');
                     if(r.Name === 'CEO'){
                         this.gridData = [r];
                     }
                 });
-
-
                 this.hier = rolesFromServer;
-                //this.gridData = res;
             })
             .catch(error => {
                 this.error = error;
             });
-        // setTimeout(() => { //Если cacheable=true, то нет нужды в таймауте
-        //     var res = [];
-        //     console.log(this.hierWithSer.length, this.hierWithSer[0]);
-        //     JSON.parse(this.hierWithSer).forEach(h => 
-        //         res.push(h)
-        //     );
-        //     console.log(res);
-        //     this.hier = res;
-        //     }, 300);
     }
 
 
+    setMomentValues(dateTime) {
+        const mom = moment.utc(dateTime);
+        this.selectedDateTime = dateTime;
+        this.weekOfYear = mom.week();
+        this.dayOfYear = mom.dayOfYear();
+        this.calculatedDateTime = mom.add(3, 'hours').calendar();
+        // this.calculatedDateTime = mom
+        //     .subtract(3, 'day')
+        //     .add(10, 'hour')
+        //     .subtract(33, 'minute')
+        //     .calendar();
+    }
+
+    handleDateTimeChange(event) {
+        this.setMomentValues(event.target.value);
+    }
 }
