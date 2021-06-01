@@ -29,7 +29,7 @@ export default class AccountPicker extends LightningElement {
 
     handleAccountChange(event){
         const data = {accountId : event.detail.value};
-        console.log('data:');
+        console.log('published account data:');
         console.log(data);
         publish(this.messageContext, ACCOUNT_MESSAGE, data);
     }

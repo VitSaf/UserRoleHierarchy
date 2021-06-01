@@ -1,13 +1,15 @@
 <template>
-    <template if:true={contracts}>
-        <lightning-combobox
-                name="contracts"
-                label="Contracts for this Account"
-                value=""
-                placeholder="Select Contract"
-                options={contracts}
-                onchange={handleContractChange}
-                required
-        ></lightning-combobox>
-    </template>
+    <div class="contract-picker">
+        <template if:true={contracts}>
+            <lightning-combobox
+                    name="contracts"
+                    label="Contracts for this Account"
+                    value=""
+                    placeholder="Select Contract"
+                    options={contracts}
+                    onchange={handleContractChange}
+                    required
+            ></lightning-combobox>
+        </template>
+    </div>
 </template>

@@ -1,3 +1,14 @@
 <template>
-    
+    <div class="product-picker">
+        <template if:true={products}>
+            <div style="height: 300px;">
+                <lightning-datatable
+                        key-field="ProductId"
+                        data={products}
+                        columns={columns}
+                        onsave={handleSave}>
+                </lightning-datatable>
+            </div>    
+        </template>
+    </div>
 </template>
