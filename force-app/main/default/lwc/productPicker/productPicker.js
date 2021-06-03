@@ -4,8 +4,6 @@ import getAvaliableProductsByContractId from '@salesforce/apex/OrderService.getA
 import { publish, MessageContext, subscribe } from 'lightning/messageService';
 import CONTRACT_MESSAGE from '@salesforce/messageChannel/Contract_Message__c';
 import PRODUCT_MESSAGE from '@salesforce/messageChannel/Product_Message__c';
-import Id from '@salesforce/schema/Account.Id';
-import Pricebook2Id from '@salesforce/schema/Contract.Pricebook2Id';
 
 
 export default class ContractPicker extends LightningElement {
@@ -35,6 +33,8 @@ export default class ContractPicker extends LightningElement {
         );
     }
 //    Id, Product2.Name, UnitPrice, Pricebook2Id , Product2.Id
+
+
     handleContractMessage(message) {
         getAvaliableProductsByContractId({contractId:  message.contractId})
             .then((result) => {

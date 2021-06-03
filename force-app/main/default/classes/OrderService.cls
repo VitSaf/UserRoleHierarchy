@@ -19,17 +19,51 @@ public with sharing class OrderService {
     }
 
     @AuraEnabled
-    public static Order createOrder(Id accountId, Id contractId){
-        Order newOrder =  new Order(AccountId = accountId, OwnerId = [SELECT Id, OwnerId FROM Account WHERE Id = :accountId].OwnerId,  Status='Draft', ContractId = contractId, EffectiveDate = Date.today());
-        insert newOrder;
-        return newOrder;
+    public static Order createOrder(Id accountId, Id contractId, Id priceBookEntryId, Double unitPrice, List<List<String>>  products){
+        try{
+            Order newOrder =  new Order(AccountId = accountId, OwnerId = [SELECT Id, OwnerId FROM Account WHERE Id = :accountId].OwnerId,  Status='Draft', ContractId = contractId, EffectiveDate = Date.today());
+            insert newOrder;
+    
+            System.debug(OrderService.createOrderItem(priceBookEntryId, newOrder.Id, products));
+    
+            return newOrder;
+        }catch(Exception e){
+            throw e;
+        }
+
+    }
+    @AuraEnabled
+    public static List<OrderItem> createOrderItem(Id priceBookEntryId, Id orderId, List<List<String>> products){//Map<Id, List<Double>> products){
+        try {
+            List<OrderItem> newOrderitemList = new List<Orderitem>();
+            System.debug('Map;');
+            System.debug(products);
+            //System.System.debug(products.values());
+            for(List<String> l1: products){
+               newOrderitemList.add(new OrderItem(
+                   PricebookEntryId = priceBookEntryId, 
+                   Product2Id =  l1[0], 
+                   OrderId = orderId, 
+                   Quantity = Double.valueOf(l1[1]),//products.get(prodId)[0], 
+                   UnitPrice = Double.valueOf(l1[2])
+                   ));
+            }
+            insert newOrderItemList;
+            return newOrderItemList;
+
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
-    @AuraEnabled
-    public static OrderItem createOrderItem(Id priceBookEntryId, Id product2Id, Double quantity, Id orderId, Double unitPrice){
-        OrderItem newOrderItem = new OrderItem(PricebookEntryId = priceBookEntryId, Product2Id = product2Id, Quantity = quantity, OrderId = orderId, UnitPrice = unitPrice);
-        insert newOrderItem;
-        return newOrderItem;
+
+    @AuraEnabled(cacheable=true)
+    public static List<OrderItem> getAllOrderItems(Id orderId){
+        try {
+            return [SELECT Id,  TotalPrice, UnitPrice, Quantity FROM OrderItem WHERE OrderId= :orderId];
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
     }
-    //SELECT Product2Id, Pricebook2Id, Id, Product2.Name FROM PricebookEntry WHERE Pricebook2Id = '01s0900000DYlkjAAD'
+
 }

@@ -1,5 +1,5 @@
 import { LightningElement, track, wire } from 'lwc';
-import createOrderItem from '@salesforce/apex/OrderService.createOrderItem';
+import getAllOrderItems from '@salesforce/apex/OrderService.getAllOrderItems';
 import createOrder from '@salesforce/apex/OrderService.createOrder';
 
 import {MessageContext, subscribe } from 'lightning/messageService';
@@ -15,10 +15,11 @@ export default class OrderCreator extends LightningElement {
 
     @track currentOrder;
 
-    @track orderItems = [];
+    @track orderItems;
 
     @wire(MessageContext)
     messageContext;
+
 
     accountSubscription = null;
     contractSubscription = null;
@@ -52,48 +53,52 @@ export default class OrderCreator extends LightningElement {
     }
 
 //(Id accountId, Id contractId)
-    createNewOrder = function(){
-        createOrder({
-            accountId:  this.accountId,
-            contractId: this.contractId
-        })
-            .then((result) => {
-                this.currentOrder = result;
 
-                this.orderItems = this.createItemsForOrder();
-                })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
 
-//(Id priceBookEntryId, Id product2Id, Double quantity, Id orderId, Double unitPrice)
-    createItemsForOrder = function(){
+    //                             priceBookEntryId:  this.productsData[i].PricebookEntryId,
+    //                             product2Id: this.productsData[i].ProductId,
+    //                             quantity: this.productsData[i].Quantity,
+    //                             orderId: this.currentOrder.Id,
+    //                             unitPrice: this.productsData[i].UnitPrice
+    //                         }
+
+//(Id accountId, Id contractId, Id priceBookEntryId, Double unitPrice, Map<Id, List<Double>> products)
+    createNewOrder = function(prods){
         try{
-            for(let i = 0; i < this.productsData.length; i++){
-                createOrderItem({
-                            priceBookEntryId:  this.productsData[i].PricebookEntryId,
-                            product2Id: this.productsData[i].ProductId,
-                            quantity: this.productsData[i].Quantity,
-                            orderId: this.currentOrder.Id,
-                            unitPrice: this.productsData[i].UnitPrice
+            let argsO = {
+                accountId:  this.accountId,
+                contractId: this.contractId,
+                priceBookEntryId:  this.productsData[0].PricebookEntryId,
+                product2Id: this.productsData[0].ProductId,
+                unitPrice: this.productsData[0].UnitPrice,
+                products: prods
+            };
+            console.log('argsO');
+            console.log(argsO);
+            createOrder(argsO)
+                .then((result) => {
+                    this.currentOrder = result;
+                    console.log('createOrder:');
+                    console.log(result);
+                    }).then( () => {
+                        console.log('Hello!' + this.currentOrder.Id);
+                        getAllOrderItems({orderId : this.currentOrder.Id}).then( (result) => {
+                            console.log('HelloResult');
+                            console.log(result);
+                            this.orderItems = result;
                         })
-                        .then((result) => {
-                                console.log('result items');
-                                console.log(result);
-                                items.push(result);
-                                })
-                            .catch((error) => {
-                                console.log(error);
-                            });
-                        }
+                    })
+                .catch((error) => {
+                    console.log(error);
+                });
         }catch(e){
             console.log(e);
         }
-        console.log('items');
-        console.log(items);
-        return items;
+
     }
+
+//(Id priceBookEntryId, Id product2Id, Double quantity, Id orderId, Double unitPrice)
+
 
     subscribeToProductsMessageChannel() {
         this.productsSubscription = subscribe(
@@ -105,11 +110,14 @@ export default class OrderCreator extends LightningElement {
 
     handleProductsMessage(message) {
         this.productsData = message.productsData;
-
-        this.createNewOrder();
-
-        //setTimeout(() => { this.orderItems = this.createItemsForOrder();}, 500);
-       
+        let prods = [];//new Map();
+        for(let i = 0; i < this.productsData.length; i++){
+            prods.push([this.productsData[i].ProductId, parseFloat(this.productsData[i].Quantity), parseFloat(this.productsData[i].UnitPrice)]);
+        }
+        console.log('Map');
+        console.log(prods);
+        this.createNewOrder(prods);
+         //setTimeout(() => { this.orderItems = this.createItemsForOrder();}, 500);  
     }
 
     connectedCallback() {

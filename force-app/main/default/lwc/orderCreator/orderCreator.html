@@ -21,7 +21,7 @@
                     <template for:each={orderItems} for:item="orderItem" > 
                         <lightning-layout-item  key={orderItem.Id} size="4" padding="around-small">         
                             <lightning-record-view-form
-                            record-id={currentOrder.Id}
+                            record-id={orderItem.Id}
                             object-api-name="OrderItem">
                         <div class="slds-box boxxy1">
                             <lightning-output-field field-name="Id">

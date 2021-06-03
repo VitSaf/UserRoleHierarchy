@@ -1,0 +1,50 @@
+<template>
+    <div class="slds-box slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none">
+        <template if:true={leads}>
+            <lightning-layout multiple-rows>
+                <template for:each={leads} for:item="lead" > 
+                    <lightning-layout-item  key={lead.Id} size="4" padding="around-small" class="boxxy2">   
+                            <lightning-record-view-form
+                            record-id={lead.Id}
+                            object-api-name="Lead">
+                            <template if:true={lead.IsConverted}>
+                                <div class="slds-box boxxy1" style=background-color:red>
+                                    <lightning-output-field field-name="Id">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Name">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Company">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Status">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Rating">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="IsConverted">
+                                    </lightning-output-field>
+                                    <lightning-button label="Show Account!" title={lead.ConvertedAccountId} onclick={handleShowAccClick} class="slds-m-left_x-small"></lightning-button>
+                                </div>
+                            </template>
+                            <template if:false={lead.IsConverted}>
+                                <div class="slds-box boxxy1" style=background-color:green>
+                                    <lightning-output-field field-name="Id">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Name">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Company">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Status">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="Rating">
+                                    </lightning-output-field>
+                                    <lightning-output-field field-name="IsConverted">
+                                    </lightning-output-field>
+                                    <lightning-button label="Convert!" title={lead.Id} onclick={handleConvertClick} class="slds-m-left_x-small"></lightning-button>
+                                </div>
+                            </template>
+                        </lightning-record-view-form>
+                    </lightning-layout-item>
+                </template>
+            </lightning-layout>
+        </template>	
+    </div>
+</template>
