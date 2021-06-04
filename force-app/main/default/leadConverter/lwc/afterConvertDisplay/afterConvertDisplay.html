@@ -1,0 +1,32 @@
+<template>
+    <template if:true={newAccount}>
+        <div style={backgroundStyle} class="c1">
+            <lightning-record-view-form
+                record-id={newAccount.Id}
+                object-api-name="Account">
+                <lightning-output-field field-name="Id">
+                </lightning-output-field>
+                <lightning-output-field field-name="Name">
+                </lightning-output-field>
+                <lightning-output-field field-name="Industry">
+                </lightning-output-field>
+                <lightning-output-field field-name="Phone">
+                </lightning-output-field>
+            </lightning-record-view-form>
+            <template if:true={user}>
+                <div class="slds-box u1">
+                    <lightning-record-view-form
+                            record-id={user.Id}
+                            object-api-name="User">
+                        <lightning-output-field field-name="Id">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="Name">
+                        </lightning-output-field>
+                        <lightning-output-field field-name="LastConvertedDate__c">
+                        </lightning-output-field>
+                    </lightning-record-view-form>
+                </div>
+            </template>
+        </div>
+    </template>
+</template>
