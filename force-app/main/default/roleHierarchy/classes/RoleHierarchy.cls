@@ -10,6 +10,7 @@ public with sharing class RoleHierarchy {
         this.childs = childs1;
         this.parent = parent1;
     }
+    
     @AuraEnabled(cacheable=true)
     public static List<RoleHierarchy> getUserRolesWithHierarchy(Map<String, List<UserRole>> mappedRoles, Map<String, UserRole> urMap){
 

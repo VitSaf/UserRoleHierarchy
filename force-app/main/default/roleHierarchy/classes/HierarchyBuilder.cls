@@ -23,18 +23,7 @@ public class HierarchyBuilder {
         return [SELECT Id, Name, ParentRoleId FROM UserRole];
     }
 
-    public void display(){
-        for(String k : hierarchy.keySet()){
-            String announce = 'Наследники роли ' +idUserRoleMap.get(k).Name+': (';
-            String announceFinal = '';
-            Integer counter = 0;
-            for(UserRole ur: hierarchy.get(k)){
-                announceFinal += ur.Name + ', ';
-                counter++;
-            }
-            System.debug(announce + announceFinal.substring(0, announceFinal.length() -2) +') - всего ' +counter + ' наследников');
-        }
-    }
+
 //генерит мапу hierarchy, где ключ - Id родителя, а значения - это список всех ролей, у которых ParentId = этот Id
     void mapByParents(List<UserRole> l){
         //Map<String, List<UserRole>> hierarchy
